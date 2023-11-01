@@ -4,7 +4,6 @@ export const authApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     login: builder.query({
       query: (credentials) => {
-        console.log(credentials);
         return {
           url: "/ping",
           headers: {

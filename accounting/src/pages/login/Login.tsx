@@ -3,10 +3,12 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import CssBaseline from "@mui/material/CssBaseline";
-import { Alert, Avatar, Box, Button, TextField } from "@mui/material";
+import { Alert, Avatar, Box, Button, Collapse, TextField } from "@mui/material";
 import { useLoginQuery } from "../../slice/authApiSlice";
 import { useAppDispatch } from "../../hooks/hooks";
 import { useNavigate } from "react-router";
+import { apiSlice } from "../../service/apiSlice";
+import { setCredentials } from "../../slice/authSlice";
 
 interface LoginError {
   valid?: boolean;
@@ -30,7 +32,7 @@ const Login = () => {
     valid: false,
   });
   const { email, password } = formData;
-  const { data, isLoading, isFetching, isError, error, refetch } =
+  const { data, isLoading, isFetching, isSuccess, isError, error, refetch } =
     useLoginQuery(formData, { skip });
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -41,6 +43,7 @@ const Login = () => {
         valid: true,
       });
     }
+    setSkip(true);
   };
 
   const findFormErrors = () => {
@@ -52,7 +55,7 @@ const Login = () => {
     return newErrors;
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const newErrors = findFormErrors();
@@ -61,16 +64,36 @@ const Login = () => {
       setLoginError(newErrors);
     } else {
       try {
-        setSkip((prev) => !prev);
-        refetch({ user: email, pass: password });
-        // dispatch(setCredentials({ ...userData, email }));
-        setFormData({ ...formData, email: "", password: "" });
-        navigate("/bills");
+        setSkip(false);
+        refetch();
+        // const result = await refetch({
+        //   user: email,
+        //   pass: password,
+        // });
+        if (data?.status === "ok") {
+          setCredentials({
+            credentials: btoa(`${formData.email}:${formData.password}`),
+            email: formData.email,
+          });
+          setFormData({ ...formData, email: "", password: "" });
+          navigate("/bills");
+        }
       } catch (error) {
-        console.log(error);
+        setOpen(true);
+
+        if (error && error?.data) {
+          setLoginError({
+            ...loginError,
+            valid: false,
+          });
+        }
       }
     }
   };
+
+  if (isLoading || isFetching) {
+    return <div>Loading ...</div>;
+  }
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -125,16 +148,18 @@ const Login = () => {
           >
             Sign In
           </Button>
-          {isError && (
-            <Alert
-              severity="error"
-              onClose={() => {
-                setOpen(!open);
-              }}
-              sx={{ mb: 2 }}
-            >
-              {error?.data?.message}
-            </Alert>
+          {isError && open && (
+            <Collapse in={open}>
+              <Alert
+                severity="error"
+                onClose={() => {
+                  setOpen(false);
+                }}
+                sx={{ mb: 2 }}
+              >
+                {error?.data?.message}
+              </Alert>
+            </Collapse>
           )}
         </Box>
       </Box>
