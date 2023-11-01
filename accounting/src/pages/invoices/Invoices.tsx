@@ -9,12 +9,16 @@ import { mockData } from "./mockData";
 import { Link } from "react-router-dom";
 
 const Invoices = () => {
-  const { data: AllInvoices } = useGetAllInvoicesQuery({ page: 1, limit: 10 });
+  const {
+    data: AllInvoices,
+    isLoading,
+    isFetching,
+  } = useGetAllInvoicesQuery({ page: 1, limit: 10 });
 
   // const { data, meta } = AllInvoices ?? []; 403 from server
 
   const { data, meta } = mockData;
-  console.log(data);
+
   const rows = data?.map((item: any) => {
     return {
       name: item?.contact_name ? (
@@ -30,6 +34,10 @@ const Invoices = () => {
       date: item?.creted_at ? item?.created_at : "--",
     };
   });
+
+  if (isLoading || isFetching) {
+    return <div> Loading ....</div>;
+  }
   return (
     <>
       <Grid container>

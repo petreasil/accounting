@@ -1,7 +1,7 @@
 import React from "react";
 import { useParams, useNavigate } from "react-router";
-import { useGetSingleInvoiceQuery } from "../../slice/invoicesApiSlice";
 import { Box, Modal } from "@mui/material";
+import { useGetSingleBillQuery } from "../../slice/billsApiSlice";
 
 const style = {
   position: "absolute" as "absolute",
@@ -19,12 +19,12 @@ const style = {
 
 const SingleInvoice = () => {
   const params = useParams();
-  const { data, isLoading, isFetching } = useGetSingleInvoiceQuery(params.id);
+  const { data, isLoading, isFetching } = useGetSingleBillQuery(params.id);
 
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(true);
   const closeModal = () => {
-    navigate("/home/invoices");
+    navigate("/home/bills");
     setOpen(!open);
   };
 
@@ -40,8 +40,14 @@ const SingleInvoice = () => {
         aria-describedby="parent-modal-description"
       >
         <Box sx={{ ...style, width: 400 }}>
+          <h1 className="text-center">
+            <strong>{data?.data?.type ?? "--"}</strong>
+          </h1>
           <h2 id="parent-modal-title">
             <strong>city:</strong> {data?.data?.contact_city ?? "--"}
+          </h2>
+          <h2 id="parent-modal-title">
+            <strong>amount:</strong> {data?.data?.amount_formatted ?? "--"}
           </h2>
           <h2 id="parent-modal-title">
             <strong>phone:</strong>: {data?.data?.contact_phone ?? "--"}
