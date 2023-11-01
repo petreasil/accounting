@@ -24,7 +24,13 @@ export const billsApiSlice = apiSlice.injectEndpoints({
           : ["Bills"];
       },
     }),
+    getSingleBill: builder.query<GroupData, number>({
+      query: (id) => ({
+        url: `/documents/${id}?search=type:bill`,
+      }),
+      providesTags: (result, error, id) => [{ type: "Bills", id }],
+    }),
   }),
 });
 
-export const { useGetAllBillsQuery } = billsApiSlice;
+export const { useGetAllBillsQuery, useGetSingleBillQuery } = billsApiSlice;
