@@ -9,12 +9,16 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import {
   Avatar,
   Badge,
+  Breadcrumbs,
   Divider,
   IconButton,
+  Link,
   List,
   Toolbar,
 } from "@mui/material";
-import { mainListItems } from "./listItems";
+import ListItems from "./listItems";
+import { useAppDispatch } from "../../hooks/hooks";
+import { logOut } from "../../slice/authSlice";
 
 const drawerWidth: number = 240;
 
@@ -50,6 +54,7 @@ const Drawer = styled(MuiDrawer, {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
     }),
+    backgroundColor: "#f3f2fe",
     boxSizing: "border-box",
     ...(!open && {
       overflowX: "hidden",
@@ -64,7 +69,17 @@ const Drawer = styled(MuiDrawer, {
     }),
   },
 }));
+
+const listMenu = [
+  "Dashboards",
+  "Invoices",
+  "Bills",
+  "Expenses",
+  "Reports",
+  "Accounting",
+];
 const AppSideBar = ({ open, toggleDrawer }) => {
+  const dispatch = useAppDispatch();
   return (
     <>
       <AppBar position="absolute" open={open}>
@@ -92,7 +107,19 @@ const AppSideBar = ({ open, toggleDrawer }) => {
             noWrap
             sx={{ flexGrow: 1 }}
           >
-            Dashboard
+            <Breadcrumbs aria-label="breadcrumb">
+              <Link underline="hover" color="inherit" href="/">
+                MUI
+              </Link>
+              <Link
+                underline="hover"
+                color="inherit"
+                href="/material-ui/getting-started/installation/"
+              >
+                Core
+              </Link>
+              <Typography color="white">Breadcrumbs</Typography>
+            </Breadcrumbs>
           </Typography>
 
           <IconButton color="inherit">
@@ -105,7 +132,9 @@ const AppSideBar = ({ open, toggleDrawer }) => {
               <NotificationsIcon />
             </Badge>
           </IconButton>
-          <Avatar sx={{ bgcolor: "orange", width: 30, height: 30 }}>N</Avatar>
+          <IconButton color="inherit" onClick={() => dispatch(logOut())}>
+            <Avatar sx={{ bgcolor: "orange", width: 30, height: 30 }}>N</Avatar>
+          </IconButton>
         </Toolbar>
       </AppBar>
       <Drawer variant="permanent" open={open}>
@@ -122,7 +151,11 @@ const AppSideBar = ({ open, toggleDrawer }) => {
           </IconButton>
         </Toolbar>
         <Divider />
-        <List component="nav">{mainListItems}</List>
+        <List component="nav">
+          {listMenu.map((item) => (
+            <ListItems item={item} key={item} />
+          ))}
+        </List>
       </Drawer>
     </>
   );

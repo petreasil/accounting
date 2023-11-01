@@ -1,19 +1,31 @@
-import React from "react";
+import { loadPartialConfig } from "@babel/core";
+import { Container } from "@mui/system";
+import { Suspense } from "react";
+import { Route, Routes } from "react-router-dom";
+import { routes } from "../../routes";
 
 const AppContent = () => {
   return (
-  <div className="min-h-screen bg-gray-100">
-  <div className="p-4">
-    <div className="max-w-7xl mx-auto mt-4">
-      {/* Content goes here */}
-      <div className="bg-white p-4 rounded-lg">
-        <h2 className="text-2xl font-semibold">Content Title</h2>
-        <p>Content goes here.</p>
-      </div>
-    </div>
-
-  </div>
-  </div>;
+    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+      <Suspense fallback={<div>Loading ...</div>}>
+        <Routes>
+          {routes.map((route, idx) => {
+            return (
+              route.element && (
+                <Route
+                  key={idx}
+                  path={route.path}
+                  exact={route.exact}
+                  name={route.name}
+                  element={<route.element />}
+                />
+              )
+            );
+          })}
+        </Routes>
+      </Suspense>
+    </Container>
+  );
 };
 
 export default AppContent;

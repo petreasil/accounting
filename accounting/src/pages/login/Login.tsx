@@ -32,7 +32,7 @@ const Login = () => {
     valid: false,
   });
   const { email, password } = formData;
-  const { data, isLoading, isFetching, isSuccess, isError, error, refetch } =
+  const { data, isLoading, isFetching, isError, error, refetch } =
     useLoginQuery(formData, { skip });
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
