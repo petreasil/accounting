@@ -66,17 +66,16 @@ const Login = () => {
       try {
         setSkip(false);
         refetch();
-        // const result = await refetch({
-        //   user: email,
-        //   pass: password,
-        // });
+
         if (data?.status === "ok") {
-          setCredentials({
-            credentials: btoa(`${formData.email}:${formData.password}`),
-            email: formData.email,
-          });
+          dispatch(
+            setCredentials({
+              credentials: btoa(`${formData.email}:${formData.password}`),
+              email: formData.email,
+            })
+          );
           setFormData({ ...formData, email: "", password: "" });
-          navigate("/bills");
+          navigate("/home/bills");
         }
       } catch (error) {
         setOpen(true);
