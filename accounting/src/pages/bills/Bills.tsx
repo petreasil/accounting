@@ -1,5 +1,4 @@
-import React from "react";
-import { Box, Grid, ListItemButton, ListItemIcon } from "@mui/material";
+import { Box, Grid, ListItemButton, ListItemIcon, Paper } from "@mui/material";
 import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import CreateOutlinedIcon from "@mui/icons-material/CreateOutlined";
@@ -7,17 +6,28 @@ import CustomTable from "../../components/customtable/CustomTable";
 import { useGetAllBillsQuery } from "../../slice/billsApiSlice";
 import { columns } from "./data/columns";
 import { Link } from "react-router-dom";
-import { mockDataBills } from "./mockDataBills";
+import Pagination from "@mui/material/Pagination";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
+import { useState } from "react";
 
 const Bills = () => {
+  const [limit, setLimit] = useState<number>(10);
+  const [page, setPage] = useState(1);
   const {
     data: allBills,
     isLoading,
     isFetching,
-  } = useGetAllBillsQuery({ page: 1, limit: 10 });
-  // const { data, meta } = allBills || [];
-  const { data, meta } = mockDataBills;
-  console.log(data);
+  } = useGetAllBillsQuery({ page, limit });
+  const { data, meta } = allBills || [];
+  console.log(allBills);
+  const handleChange = (e: SelectChangeEvent<number>) => {
+    setLimit(e.target.value);
+    setPage(1);
+  };
+
   const rows = data?.map((item: any) => {
     return {
       name: item?.id ? (
@@ -65,9 +75,51 @@ const Bills = () => {
             </ListItemButton>
           </Box>
         </Grid>
-
+        {/*move pagination to sparate component*/}
         <Grid item xs={12}>
           <CustomTable columns={columns} rows={rows} />
+          <Paper
+            elevation={1}
+            sx={{
+              fontWeight: "700",
+              fontSize: "0.875rem",
+              lineHeight: "1.5rem",
+              letterSpacing: "0.01071em",
+              borderBottom: "1px solid rgba(224, 224, 224, 1)",
+              textAlign: "center",
+              padding: "6px 16px",
+              backgroundColor: "#f2f2f2",
+              minHeight: "50px",
+              display: "flex",
+              alignContent: "center",
+              justifyContent: "flex-start",
+              alignItems: "center",
+            }}
+          >
+            <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+              <InputLabel id="demo-select-small-label">Show</InputLabel>
+              <Select
+                labelId="demo-select-small-label"
+                id="demo-select-small"
+                value={limit}
+                label="Show"
+                onChange={handleChange}
+              >
+                <MenuItem value={10}>10</MenuItem>
+                <MenuItem value={20}>20</MenuItem>
+                <MenuItem value={30}>30</MenuItem>
+              </Select>
+            </FormControl>
+            <Pagination
+              count={meta?.last_page}
+              page={page}
+              showFirstButton
+              showLastButton
+              onChange={(_event, value) => {
+                setPage(value);
+              }}
+            />
+          </Paper>
         </Grid>
       </Grid>
     </>

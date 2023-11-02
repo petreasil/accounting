@@ -24,7 +24,7 @@ const CustomTable: React.FC<CustomTableProps> = ({ columns, rows }) => {
   return (
     <TableContainer
       component={Paper}
-      sx={{ margin: "20px 0px", minHeight: "50vh" }}
+      sx={{ margin: "20px 0px 0px 0px", minHeight: "50vh" }}
     >
       <Table sx={{ minWidth: 650 }} aria-label="simple table" size="small">
         <TableHead sx={{ backgroundColor: "#f2f2f2" }}>
