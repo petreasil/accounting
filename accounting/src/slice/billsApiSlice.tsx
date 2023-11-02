@@ -12,7 +12,7 @@ export const billsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getAllBills: builder.query<GroupResponse, void>({
       query: ({ page, limit }: { page?: string; limit?: number }) => {
-        let url = "/documents?search:bill";
+        let url = "/documents?search=type:bill";
         if (page && limit) {
           url += `&page=${page}&limit=${limit}`;
         }
