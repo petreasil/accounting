@@ -22,7 +22,7 @@ const Bills = () => {
     isFetching,
   } = useGetAllBillsQuery({ page, limit });
   const { data, meta } = allBills || [];
-  console.log(allBills);
+
   const handleChange = (e: SelectChangeEvent<number>) => {
     setLimit(e.target.value);
     setPage(1);

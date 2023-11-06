@@ -2,9 +2,10 @@ import { apiSlice } from "../service/apiSlice";
 
 export const authApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    login: builder.query({
+    login: builder.mutation({
       query: (credentials) => {
         return {
+          method: "GET",
           url: "/ping",
           headers: {
             Authorization: `Basic ${btoa(
@@ -17,4 +18,4 @@ export const authApiSlice = apiSlice.injectEndpoints({
   }),
 });
 
-export const { useLoginQuery } = authApiSlice;
+export const { useLoginMutation } = authApiSlice;

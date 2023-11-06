@@ -4,10 +4,9 @@ import Container from "@mui/material/Container";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import CssBaseline from "@mui/material/CssBaseline";
 import { Alert, Avatar, Box, Button, Collapse, TextField } from "@mui/material";
-import { useLoginQuery } from "../../slice/authApiSlice";
+import { useLoginMutation } from "../../slice/authApiSlice";
 import { useAppDispatch } from "../../hooks/hooks";
 import { useNavigate } from "react-router";
-import { apiSlice } from "../../service/apiSlice";
 import { setCredentials } from "../../slice/authSlice";
 
 interface LoginError {
@@ -19,7 +18,8 @@ interface LoginError {
 const Login = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const [skip, setSkip] = React.useState(true);
+  const [login, { isLoading, isError, error }] = useLoginMutation();
+
   const [open, setOpen] = React.useState(false);
   const [formData, setFormData] = React.useState<{
     email: string;
@@ -32,8 +32,7 @@ const Login = () => {
     valid: false,
   });
   const { email, password } = formData;
-  const { data, isLoading, isFetching, isError, error, refetch } =
-    useLoginQuery(formData, { skip });
+
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     if (loginError[e.target.name as keyof LoginError]) {
@@ -43,7 +42,6 @@ const Login = () => {
         valid: true,
       });
     }
-    setSkip(true);
   };
 
   const findFormErrors = () => {
@@ -64,10 +62,9 @@ const Login = () => {
       setLoginError(newErrors);
     } else {
       try {
-        setSkip(false);
-        refetch();
+        const response = await login(formData).unwrap();
 
-        if (data?.status === "ok") {
+        if (response?.status === "ok") {
           dispatch(
             setCredentials({
               credentials: btoa(`${formData.email}:${formData.password}`),
@@ -79,8 +76,7 @@ const Login = () => {
         }
       } catch (error) {
         setOpen(true);
-
-        if (error && error?.data) {
+        if (error && error?.data?.message) {
           setLoginError({
             ...loginError,
             valid: false,
@@ -90,7 +86,7 @@ const Login = () => {
     }
   };
 
-  if (isLoading || isFetching) {
+  if (isLoading) {
     return <div>Loading ...</div>;
   }
   return (
